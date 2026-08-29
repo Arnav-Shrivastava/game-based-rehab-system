@@ -30,6 +30,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const td = document.getElementById('s-timer-duration');
     if (td) { td.value = s.timerDuration; document.getElementById('timer-val').textContent = s.timerDuration; }
 
+    // Movement
+    const mtc = document.getElementById('s-move-target-count');
+    if (mtc) { mtc.value = s.movementTargetCount || 5; document.getElementById('move-target-count-val').textContent = s.movementTargetCount || 5; }
+    setActiveToggle('move-target-size-group', s.movementTargetSize || 'medium');
+    const ms = document.getElementById('s-move-speed');
+    if (ms) { ms.value = s.movementSpeed || 2000; document.getElementById('move-speed-val').textContent = ((s.movementSpeed || 2000) / 1000).toFixed(1) + 's'; }
+    const md = document.getElementById('s-move-duration');
+    if (md) { md.value = s.movementDuration || 3; document.getElementById('move-duration-val').textContent = s.movementDuration || 3; }
+
     // Sound
     const es = document.getElementById('s-sound');
     if (es) es.checked = s.enableSound;
@@ -79,6 +88,22 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('s-timer-duration').addEventListener('input', e => {
       document.getElementById('timer-val').textContent = e.target.value;
     });
+
+    // Movement Settings
+    const smtc = document.getElementById('s-move-target-count');
+    if (smtc) smtc.addEventListener('input', e => { document.getElementById('move-target-count-val').textContent = e.target.value; });
+
+    const mtsg = document.getElementById('move-target-size-group');
+    if (mtsg) mtsg.addEventListener('click', e => {
+      const btn = e.target.closest('.btn-toggle');
+      if (btn) setActiveToggle('move-target-size-group', btn.dataset.val);
+    });
+
+    const sms = document.getElementById('s-move-speed');
+    if (sms) sms.addEventListener('input', e => { document.getElementById('move-speed-val').textContent = (e.target.value / 1000).toFixed(1) + 's'; });
+
+    const smd = document.getElementById('s-move-duration');
+    if (smd) smd.addEventListener('input', e => { document.getElementById('move-duration-val').textContent = e.target.value; });
 
     // Volume slider
     document.getElementById('s-volume').addEventListener('input', e => {
@@ -148,6 +173,10 @@ document.addEventListener('DOMContentLoaded', () => {
       fontSize:         parseInt(document.getElementById('s-font-size').value),
       largeTouchTargets: document.getElementById('s-large-targets').checked,
       keyboardNav:      document.getElementById('s-keyboard-nav').checked,
+      movementTargetCount: parseInt(document.getElementById('s-move-target-count') ? document.getElementById('s-move-target-count').value : 5),
+      movementTargetSize: getActiveToggle('move-target-size-group') || 'medium',
+      movementSpeed: parseInt(document.getElementById('s-move-speed') ? document.getElementById('s-move-speed').value : 2000),
+      movementDuration: parseInt(document.getElementById('s-move-duration') ? document.getElementById('s-move-duration').value : 3),
     };
     Storage.saveSettings(settings);
     UI.showToast('Settings saved successfully! ✓');

@@ -94,6 +94,10 @@ export const Storage = (() => {
     fontSize: 16,
     largeTouchTargets: true,
     keyboardNav: true,
+    movementTargetCount: 5,
+    movementTargetSize: 'medium',
+    movementSpeed: 2000,
+    movementDuration: 3,
   };
   function getSettings() {
     try {
