@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CogniCare - Reports & Analytics</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/reports.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-brand">
+      <span class="dot red sm"></span>
+      <span class="dot green sm"></span>
+      <span class="dot blue sm"></span>
+      <strong>CogniCare</strong>
+    </div>
+    <nav class="header-nav">
+      <a href="index.html" class="nav-link">Dashboard</a>
+      <a href="patient.html" class="nav-link">Patients</a>
+      <a href="therapy.html" class="nav-link">Therapy</a>
+      <a href="reports.html" class="nav-link active">Reports</a>
+      <a href="settings.html" class="nav-link">Settings</a>
+    </nav>
+    <div class="header-right">
+      <button id="btn-dark" class="icon-btn">🌙</button>
+      <button id="btn-fs" class="icon-btn">⛶</button>
+      <span id="clock" class="clock-display">--:--</span>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <div class="page-title-row">
+      <div>
+        <h2 class="page-title">Reports & Analytics</h2>
+        <p class="page-sub">Session history and performance metrics</p>
+      </div>
+      <div class="report-actions">
+        <button class="btn btn-outline" id="btn-print">🖨️ Print</button>
+        <button class="btn btn-primary" id="btn-pdf">📄 Export PDF</button>
+      </div>
+    </div>
+
+    <!-- Filter Row -->
+    <div class="filter-row">
+      <select id="filter-patient" class="input-field select-field">
+        <option value="">All Patients</option>
+      </select>
+      <select id="filter-level" class="input-field select-field">
+        <option value="">All Levels</option>
+        <option value="1">Level 1</option>
+        <option value="2">Level 2</option>
+        <option value="3">Level 3</option>
+        <option value="4">Level 4</option>
+        <option value="5">Level 5</option>
+        <option value="6">Level 6</option>
+        <option value="7">Level 7</option>
+      </select>
+      <input type="date" id="filter-date-from" class="input-field" aria-label="From date" />
+      <input type="date" id="filter-date-to" class="input-field" aria-label="To date" />
+      <button class="btn btn-outline" id="btn-clear-filter">Clear</button>
+    </div>
+
+    <!-- Summary Stats -->
+    <div class="stats-row" id="report-summary">
+      <div class="stat-card">
+        <div class="stat-icon blue-bg">📅</div>
+        <div>
+          <div class="stat-val" id="rpt-sessions">0</div>
+          <div class="stat-lbl">Total Sessions</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green-bg">✅</div>
+        <div>
+          <div class="stat-val" id="rpt-accuracy">—</div>
+          <div class="stat-lbl">Avg. Accuracy</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon purple-bg">⚡</div>
+        <div>
+          <div class="stat-val" id="rpt-react">—</div>
+          <div class="stat-lbl">Avg. Reaction Time</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon orange-bg">👥</div>
+        <div>
+          <div class="stat-val" id="rpt-patients">0</div>
+          <div class="stat-lbl">Patients Treated</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3 class="chart-title">Accuracy Trend</h3>
+        <canvas id="chart-accuracy" width="600" height="260"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3 class="chart-title">Reaction Time Trend</h3>
+        <canvas id="chart-reaction" width="600" height="260"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3 class="chart-title">Sessions per Level</h3>
+        <canvas id="chart-levels" width="600" height="260"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3 class="chart-title">Correct vs Wrong Hits</h3>
+        <canvas id="chart-hits" width="600" height="260"></canvas>
+      </div>
+    </div>
+
+    <!-- Session Table -->
+    <div class="section-block">
+      <div class="section-header">
+        <h3>Session History</h3>
+        <span id="session-count">0 sessions</span>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table" id="session-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Patient</th>
+              <th>Level</th>
+              <th>Difficulty</th>
+              <th>Correct</th>
+              <th>Wrong</th>
+              <th>Accuracy</th>
+              <th>Reaction</th>
+              <th>Time</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody id="session-table-body">
+            <tr><td colspan="10" class="empty-cell">No sessions recorded yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <span>CogniCare v2.0</span>
+    <span>© 2026 Hospital Cognitive Rehabilitation System</span>
+    <span id="footer-date"></span>
+  </footer>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/reports.js"></script>
+</body>
+</html>

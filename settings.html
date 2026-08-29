@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CogniCare - Settings</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-brand">
+      <span class="dot red sm"></span>
+      <span class="dot green sm"></span>
+      <span class="dot blue sm"></span>
+      <strong>CogniCare</strong>
+    </div>
+    <nav class="header-nav">
+      <a href="index.html" class="nav-link">Dashboard</a>
+      <a href="patient.html" class="nav-link">Patients</a>
+      <a href="therapy.html" class="nav-link">Therapy</a>
+      <a href="reports.html" class="nav-link">Reports</a>
+      <a href="settings.html" class="nav-link active">Settings</a>
+    </nav>
+    <div class="header-right">
+      <button id="btn-dark" class="icon-btn">🌙</button>
+      <button id="btn-fs" class="icon-btn">⛶</button>
+      <span id="clock" class="clock-display">--:--</span>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <div class="page-title-row">
+      <div>
+        <h2 class="page-title">Settings</h2>
+        <p class="page-sub">Configure therapy session parameters</p>
+      </div>
+      <div>
+        <button class="btn btn-outline" id="btn-reset-settings">↺ Reset Defaults</button>
+        <button class="btn btn-primary" id="btn-save-settings">💾 Save Settings</button>
+      </div>
+    </div>
+
+    <div class="settings-grid">
+
+      <!-- Ball Settings -->
+      <div class="settings-card">
+        <div class="settings-card-header">
+          <span class="settings-icon">⚽</span>
+          <h3>Ball Settings</h3>
+        </div>
+
+        <div class="form-group">
+          <label for="s-ball-count">Number of Balls <span class="range-val" id="ball-count-val">10</span></label>
+          <input type="range" id="s-ball-count" class="range-slider" min="5" max="50" value="10" step="1" />
+          <div class="range-labels"><span>5 (min)</span><span>50 (max)</span></div>
+        </div>
+
+        <div class="form-group">
+          <label>Ball Size</label>
+          <div class="btn-group" id="ball-size-group">
+            <button class="btn-toggle" data-val="small">Small</button>
+            <button class="btn-toggle active" data-val="medium">Medium</button>
+            <button class="btn-toggle" data-val="large">Large</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Difficulty -->
+      <div class="settings-card">
+        <div class="settings-card-header">
+          <span class="settings-icon">🎯</span>
+          <h3>Difficulty</h3>
+        </div>
+        <div class="form-group">
+          <label>Difficulty Level</label>
+          <div class="btn-group" id="difficulty-group">
+            <button class="btn-toggle" data-val="easy">Easy</button>
+            <button class="btn-toggle active" data-val="medium">Medium</button>
+            <button class="btn-toggle" data-val="hard">Hard</button>
+          </div>
+        </div>
+        <div class="difficulty-info" id="difficulty-info">
+          <p><strong>Medium:</strong> Standard game speed. 15 balls by default.</p>
+        </div>
+      </div>
+
+      <!-- Timer -->
+      <div class="settings-card">
+        <div class="settings-card-header">
+          <span class="settings-icon">⏱️</span>
+          <h3>Timer</h3>
+        </div>
+        <div class="form-group">
+          <label class="toggle-label">
+            <span>Enable Timer</span>
+            <input type="checkbox" id="s-enable-timer" class="toggle-input" />
+            <span class="toggle-switch"></span>
+          </label>
+        </div>
+        <div class="form-group" id="timer-duration-group">
+          <label for="s-timer-duration">Session Time (minutes) <span class="range-val" id="timer-val">5</span></label>
+          <input type="range" id="s-timer-duration" class="range-slider" min="1" max="30" value="5" step="1" />
+          <div class="range-labels"><span>1 min</span><span>30 min</span></div>
+        </div>
+      </div>
+
+      <!-- Sound -->
+      <div class="settings-card">
+        <div class="settings-card-header">
+          <span class="settings-icon">🔊</span>
+          <h3>Sound</h3>
+        </div>
+        <div class="form-group">
+          <label class="toggle-label">
+            <span>Enable Sounds</span>
+            <input type="checkbox" id="s-sound" class="toggle-input" checked />
+            <span class="toggle-switch"></span>
+          </label>
+        </div>
+        <div class="form-group">
+          <label class="toggle-label">
+            <span>Voice Instructions</span>
+            <input type="checkbox" id="s-voice" class="toggle-input" checked />
+            <span class="toggle-switch"></span>
+          </label>
+        </div>
+        <div class="form-group">
+          <label for="s-volume">Volume <span class="range-val" id="vol-val">70%</span></label>
+          <input type="range" id="s-volume" class="range-slider" min="0" max="100" value="70" step="5" />
+        </div>
+      </div>
+
+      <!-- Appearance -->
+      <div class="settings-card">
+        <div class="settings-card-header">
+          <span class="settings-icon">🎨</span>
+          <h3>Appearance</h3>
+        </div>
+        <div class="form-group">
+          <label class="toggle-label">
+            <span>Dark Mode</span>
+            <input type="checkbox" id="s-dark-mode" class="toggle-input" />
+            <span class="toggle-switch"></span>
+          </label>
+        </div>
+        <div class="form-group">
+          <label>Color Theme</label>
+          <div class="theme-swatches" id="theme-swatches">
+            <button class="swatch active" data-theme="default" style="background:linear-gradient(135deg,#e74c3c,#2ecc71,#3498db)" title="Default RGB"></button>
+            <button class="swatch" data-theme="ocean" style="background:linear-gradient(135deg,#00b4db,#0083b0)" title="Ocean"></button>
+            <button class="swatch" data-theme="sunset" style="background:linear-gradient(135deg,#ff6b6b,#feca57)" title="Sunset"></button>
+            <button class="swatch" data-theme="forest" style="background:linear-gradient(135deg,#11998e,#38ef7d)" title="Forest"></button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="toggle-label">
+            <span>High Contrast Mode</span>
+            <input type="checkbox" id="s-high-contrast" class="toggle-input" />
+            <span class="toggle-switch"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Accessibility -->
+      <div class="settings-card">
+        <div class="settings-card-header">
+          <span class="settings-icon">♿</span>
+          <h3>Accessibility</h3>
+        </div>
+        <div class="form-group">
+          <label for="s-font-size">Font Size <span class="range-val" id="font-size-val">16px</span></label>
+          <input type="range" id="s-font-size" class="range-slider" min="12" max="24" value="16" step="1" />
+        </div>
+        <div class="form-group">
+          <label class="toggle-label">
+            <span>Large Touch Targets</span>
+            <input type="checkbox" id="s-large-targets" class="toggle-input" checked />
+            <span class="toggle-switch"></span>
+          </label>
+        </div>
+        <div class="form-group">
+          <label class="toggle-label">
+            <span>Keyboard Navigation</span>
+            <input type="checkbox" id="s-keyboard-nav" class="toggle-input" checked />
+            <span class="toggle-switch"></span>
+          </label>
+        </div>
+      </div>
+
+    </div><!-- .settings-grid -->
+
+    <!-- Data Management -->
+    <div class="settings-card danger-zone">
+      <div class="settings-card-header">
+        <span class="settings-icon">🗑️</span>
+        <h3>Data Management</h3>
+      </div>
+      <div class="danger-row">
+        <div>
+          <strong>Clear All Sessions</strong>
+          <p>Remove all recorded session data. Patient profiles will be kept.</p>
+        </div>
+        <button class="btn btn-danger" id="btn-clear-sessions">Clear Sessions</button>
+      </div>
+      <div class="danger-row">
+        <div>
+          <strong>Reset All Data</strong>
+          <p>Remove all patients, sessions and settings. Cannot be undone.</p>
+        </div>
+        <button class="btn btn-danger" id="btn-reset-all">Reset Everything</button>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <span>CogniCare v2.0</span>
+    <span>© 2026 Hospital Cognitive Rehabilitation System</span>
+    <span id="footer-date"></span>
+  </footer>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/settings.js"></script>
+</body>
+</html>

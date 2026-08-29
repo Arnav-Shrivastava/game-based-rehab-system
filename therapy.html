@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CogniCare - Therapy Session</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/therapy.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-brand">
+      <span class="dot red sm"></span>
+      <span class="dot green sm"></span>
+      <span class="dot blue sm"></span>
+      <strong>CogniCare</strong>
+    </div>
+    <nav class="header-nav">
+      <a href="index.html" class="nav-link">Dashboard</a>
+      <a href="patient.html" class="nav-link">Patients</a>
+      <a href="therapy.html" class="nav-link active">Therapy</a>
+      <a href="reports.html" class="nav-link">Reports</a>
+      <a href="settings.html" class="nav-link">Settings</a>
+    </nav>
+    <div class="header-right">
+      <button id="btn-dark" class="icon-btn">🌙</button>
+      <button id="btn-fs" class="icon-btn">⛶</button>
+      <span id="clock" class="clock-display">--:--</span>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- Setup Screen -->
+    <div id="therapy-setup" class="therapy-setup">
+      <div class="page-title-row">
+        <div>
+          <h2 class="page-title">Start Therapy Session</h2>
+          <p class="page-sub">Select a patient and level to begin</p>
+        </div>
+      </div>
+
+      <div class="setup-grid">
+
+        <!-- Patient Select -->
+        <div class="setup-card">
+          <h3 class="setup-card-title">1. Select Patient</h3>
+          <div class="search-bar">
+            <input type="text" id="pt-search" class="input-field" placeholder="Search patient name or ID…" />
+          </div>
+          <div id="pt-list" class="pt-select-list">
+            <p class="empty-msg">No patients found. <a href="patient.html">Add a patient →</a></p>
+          </div>
+        </div>
+
+        <!-- Level Select -->
+        <div class="setup-card">
+          <h3 class="setup-card-title">2. Choose Level</h3>
+          <div class="level-select-grid" id="level-select-grid">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+      </div><!-- .setup-grid -->
+
+      <!-- Quick Settings Preview -->
+      <div class="setup-card setup-settings-preview">
+        <h3 class="setup-card-title">3. Session Settings <a href="settings.html" class="small-link">Edit →</a></h3>
+        <div class="settings-preview-row" id="settings-preview">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Voice Instructions -->
+      <div class="setup-card">
+        <h3 class="setup-card-title">4. Instructions</h3>
+        <div id="instruction-box" class="instruction-box">
+          <p id="instruction-text">Select a level to see instructions.</p>
+          <button class="btn btn-outline btn-sm" id="btn-voice" title="Read instructions aloud">🔊 Read Instructions</button>
+        </div>
+      </div>
+
+      <div class="setup-start-row">
+        <div id="setup-patient-badge" class="setup-badge" style="display:none;"></div>
+        <div id="setup-level-badge" class="setup-badge setup-badge-green" style="display:none;"></div>
+        <button class="btn btn-primary btn-large" id="btn-start-session" disabled>▶ Start Session</button>
+      </div>
+    </div><!-- #therapy-setup -->
+
+    <!-- Game Screen -->
+    <div id="therapy-game" class="therapy-game" style="display:none;">
+
+      <!-- Game Header Bar -->
+      <div class="game-header">
+        <div class="game-info">
+          <span class="game-badge" id="game-patient-name">Patient</span>
+          <span class="game-badge game-badge-green" id="game-level-label">Level 1</span>
+        </div>
+        <div class="game-stats-bar">
+          <div class="gs-item">
+            <span class="gs-label">Score</span>
+            <span class="gs-val" id="gs-score">0</span>
+          </div>
+          <div class="gs-item">
+            <span class="gs-label">Correct</span>
+            <span class="gs-val green" id="gs-correct">0</span>
+          </div>
+          <div class="gs-item">
+            <span class="gs-label">Wrong</span>
+            <span class="gs-val red" id="gs-wrong">0</span>
+          </div>
+          <div class="gs-item">
+            <span class="gs-label">Time</span>
+            <span class="gs-val" id="gs-timer">00:00</span>
+          </div>
+        </div>
+        <div class="game-controls">
+          <button class="btn btn-outline btn-sm" id="btn-pause">⏸ Pause</button>
+          <button class="btn btn-outline btn-sm" id="btn-restart">↺ Restart</button>
+          <button class="btn btn-outline btn-sm" id="btn-quit">✕ Quit</button>
+        </div>
+      </div>
+
+      <!-- Live Wrong Attempts Panel -->
+      <div id="wrong-live-panel" class="wrong-live-panel" style="display:none;" role="status" aria-live="polite">
+        <span class="wlp-icon">❌</span>
+        <div class="wlp-body">
+          <span class="wlp-label">Wrong Selections</span>
+          <span class="wlp-count" id="wrong-panel-count">0</span>
+        </div>
+        <span class="wlp-tip">Try to keep this at zero!</span>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="game-progress-wrap">
+        <div class="game-progress-bar" id="game-progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="game-progress-fill" id="game-progress-fill"></div>
+        </div>
+        <span class="progress-label" id="progress-label">0%</span>
+      </div>
+
+      <!-- Instruction Banner -->
+      <div class="game-instruction" id="game-instruction">
+        <span id="gi-text">Touch the red balls</span>
+        <button class="btn-icon" id="gi-voice" title="Speak">🔊</button>
+      </div>
+
+      <!-- Game Canvas / Arena -->
+      <div class="game-arena" id="game-arena">
+        <!-- Balls injected here by JS -->
+
+        <!-- Level 7 Baskets -->
+        <div id="baskets-row" class="baskets-row" style="display:none;">
+          <div class="basket" id="basket-red" data-color="red">
+            <div class="basket-label red-text">Red Basket</div>
+            <div class="basket-zone" id="bz-red"></div>
+          </div>
+          <div class="basket" id="basket-green" data-color="green">
+            <div class="basket-label green-text">Green Basket</div>
+            <div class="basket-zone" id="bz-green"></div>
+          </div>
+          <div class="basket" id="basket-blue" data-color="blue">
+            <div class="basket-label blue-text">Blue Basket</div>
+            <div class="basket-zone" id="bz-blue"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pause Overlay -->
+      <div id="pause-overlay" class="pause-overlay" style="display:none;">
+        <div class="pause-box">
+          <h3>Session Paused</h3>
+          <p>Take a moment and resume when ready.</p>
+          <button class="btn btn-primary" id="btn-resume">▶ Resume</button>
+        </div>
+      </div>
+
+    </div><!-- #therapy-game -->
+
+    <!-- Results Screen -->
+    <div id="therapy-results" class="therapy-results" style="display:none;">
+      <div class="results-box">
+        <div class="results-header">
+          <div class="results-confetti" id="confetti-container"></div>
+          <div class="results-icon">🎉</div>
+          <h2>Session Complete!</h2>
+          <p id="result-patient-name">Patient Name</p>
+        </div>
+
+        <div class="results-stats">
+          <div class="rs-card green-border">
+            <div class="rs-val" id="r-accuracy">0%</div>
+            <div class="rs-lbl">Accuracy</div>
+          </div>
+          <div class="rs-card blue-border">
+            <div class="rs-val" id="r-score">0</div>
+            <div class="rs-lbl">Score</div>
+          </div>
+          <div class="rs-card orange-border">
+            <div class="rs-val" id="r-time">0s</div>
+            <div class="rs-lbl">Time Taken</div>
+          </div>
+          <div class="rs-card purple-border">
+            <div class="rs-val" id="r-react">—</div>
+            <div class="rs-lbl">Avg Reaction</div>
+          </div>
+        </div>
+
+        <div class="results-detail">
+          <table class="results-table">
+            <tr><td>Correct Hits</td><td id="r-correct">0</td></tr>
+            <tr><td>Wrong Selections</td><td id="r-wrong" class="wrong-result-val">0</td></tr>
+            <tr><td>Level</td><td id="r-level">—</td></tr>
+            <tr><td>Difficulty</td><td id="r-difficulty">—</td></tr>
+          </table>
+        </div>
+
+        <!-- Wrong Attempts Detail Log -->
+        <div id="wrong-detail-panel" class="wrong-detail-panel" style="display:none;">
+          <div class="wdp-header">
+            <span class="wdp-icon">📋</span>
+            <h4>Wrong Selection Log</h4>
+            <span class="wdp-sub">Detailed breakdown of each incorrect attempt</span>
+          </div>
+          <div id="wrong-log-container" class="wrong-log-container"></div>
+        </div>
+
+        <div class="doctor-notes-box">
+          <label for="doctor-notes">Doctor / Therapist Notes</label>
+          <textarea id="doctor-notes" class="input-field textarea-field" placeholder="Enter observations, remarks or next-session goals…" rows="3"></textarea>
+        </div>
+
+        <div class="results-actions">
+          <button class="btn btn-outline" id="btn-play-again">↺ Play Again</button>
+          <button class="btn btn-outline" id="btn-next-level">→ Next Level</button>
+          <a href="reports.html" class="btn btn-primary">📊 View Reports</a>
+        </div>
+      </div>
+    </div><!-- #therapy-results -->
+
+  </main>
+
+  <footer class="footer">
+    <span>CogniCare v2.0</span>
+    <span>© 2026 Hospital Cognitive Rehabilitation System</span>
+    <span id="footer-date"></span>
+  </footer>
+
+  <!-- Error Notification -->
+  <div id="error-banner" class="error-banner" style="display:none;" role="alert">
+    <span id="error-text">Error message</span>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/levels.js"></script>
+  <script src="js/dragdrop.js"></script>
+  <script src="js/therapy.js"></script>
+</body>
+</html>

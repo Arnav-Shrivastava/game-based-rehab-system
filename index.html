@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="CogniCare - Cognitive Rehabilitation Through Interactive Color Therapy" />
+  <title>CogniCare - Dashboard</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- Loading Screen -->
+  <div id="splash" class="splash">
+    <div class="splash-box">
+      <div class="splash-logo">
+        <span class="dot red"></span>
+        <span class="dot green"></span>
+        <span class="dot blue"></span>
+      </div>
+      <h1>CogniCare</h1>
+      <p>Cognitive Rehabilitation Through Interactive Color Therapy</p>
+      <div class="splash-bar"><div class="splash-fill" id="splash-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- App -->
+  <div id="app" style="display:none;">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header-brand">
+        <span class="dot red sm"></span>
+        <span class="dot green sm"></span>
+        <span class="dot blue sm"></span>
+        <strong>CogniCare</strong>
+      </div>
+      <nav class="header-nav">
+        <a href="index.html" class="nav-link active">Dashboard</a>
+        <a href="patient.html" class="nav-link">Patients</a>
+        <a href="therapy.html" class="nav-link">Therapy</a>
+        <a href="reports.html" class="nav-link">Reports</a>
+        <a href="settings.html" class="nav-link">Settings</a>
+      </nav>
+      <div class="header-right">
+        <button id="btn-dark" class="icon-btn" title="Toggle Dark Mode">🌙</button>
+        <button id="btn-fs" class="icon-btn" title="Fullscreen">⛶</button>
+        <span id="clock" class="clock-display">--:--</span>
+      </div>
+    </header>
+
+    <!-- Main -->
+    <main class="main">
+
+      <!-- Hero -->
+      <section class="hero">
+        <div class="hero-text">
+          <p class="hero-eyebrow">Hospital Cognitive Therapy Platform</p>
+          <h2 class="hero-title">Welcome to <span class="accent">CogniCare</span></h2>
+          <p class="hero-sub">Empowering therapists and patients through scientifically designed color-based cognitive exercises. Track progress, manage sessions, and generate comprehensive reports.</p>
+          <div class="hero-btns">
+            <a href="therapy.html" class="btn btn-primary">▶ Start Therapy</a>
+            <a href="patient.html" class="btn btn-outline">👥 Manage Patients</a>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div class="orb-wrap">
+            <div class="orb orb-r"></div>
+            <div class="orb orb-g"></div>
+            <div class="orb orb-b"></div>
+            <div class="orb-center">
+              <span class="orb-num">7</span>
+              <span class="orb-lbl">Levels</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Stats -->
+      <section class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon blue-bg">👥</div>
+          <div>
+            <div class="stat-val" id="st-patients">0</div>
+            <div class="stat-lbl">Total Patients</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green-bg">📅</div>
+          <div>
+            <div class="stat-val" id="st-sessions">0</div>
+            <div class="stat-lbl">Sessions Completed</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon purple-bg">📈</div>
+          <div>
+            <div class="stat-val" id="st-accuracy">—</div>
+            <div class="stat-lbl">Avg. Accuracy</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon orange-bg">⭐</div>
+          <div>
+            <div class="stat-val">7</div>
+            <div class="stat-lbl">Therapy Levels</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Feature Cards -->
+      <section class="feature-grid">
+        <a href="patient.html" class="feature-card">
+          <div class="fc-icon">👥</div>
+          <h3>Patients</h3>
+          <p>Add, edit, search and manage patient profiles. Store diagnosis, therapist info and notes securely.</p>
+          <div class="fc-footer"><span id="fc-count">0 patients</span> <span>→</span></div>
+        </a>
+        <a href="therapy.html" class="feature-card">
+          <div class="fc-icon">🎮</div>
+          <h3>Start Therapy</h3>
+          <p>7 progressive levels of color-based cognitive exercises from recognition to basket-sorting.</p>
+          <div class="fc-footer"><span>Levels 1–7</span> <span>→</span></div>
+        </a>
+        <a href="reports.html" class="feature-card">
+          <div class="fc-icon">📊</div>
+          <h3>Reports</h3>
+          <p>Visualize accuracy trends, reaction times and session histories. Export as PDF or print.</p>
+          <div class="fc-footer"><span id="fc-sessions">0 sessions</span> <span>→</span></div>
+        </a>
+        <a href="settings.html" class="feature-card">
+          <div class="fc-icon">⚙️</div>
+          <h3>Settings</h3>
+          <p>Configure ball count, size, difficulty, timer, sounds and color themes for each session.</p>
+          <div class="fc-footer"><span>All preferences</span> <span>→</span></div>
+        </a>
+      </section>
+
+      <!-- Level Overview -->
+      <section class="section-block">
+        <div class="section-header">
+          <h3>Therapy Levels Overview</h3>
+          <span>Seven progressively challenging cognitive exercises</span>
+        </div>
+        <div class="levels-grid" id="levels-grid"></div>
+      </section>
+
+      <!-- Recent Sessions -->
+      <section class="section-block">
+        <div class="section-header">
+          <h3>Recent Sessions</h3>
+          <a href="reports.html">View all →</a>
+        </div>
+        <div id="recent-sessions" class="sessions-table-wrap">
+          <p class="empty-msg">No sessions recorded yet. <a href="therapy.html">Begin first session →</a></p>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <span>CogniCare v2.0</span>
+      <span>© 2026 Hospital Cognitive Rehabilitation System</span>
+      <span id="footer-date"></span>
+    </footer>
+
+  </div><!-- #app -->
+
+  <!-- Toast -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
