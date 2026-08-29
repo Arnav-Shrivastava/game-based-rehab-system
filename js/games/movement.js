@@ -129,7 +129,8 @@ document.addEventListener('DOMContentLoaded', () => {
       lastTracePoint: null,
       lastSignedDist: undefined,
       lastDelta: undefined,
-      reachedEnd: false
+      reachedEnd: false,
+      firstContactTime: null
     };
     arena.querySelectorAll('.ball').forEach(b => b.remove());
     const overlay = document.getElementById('overlay-canvas');
@@ -359,6 +360,10 @@ document.addEventListener('DOMContentLoaded', () => {
           gameState.outOfBoundsFrames++;
         }
 
+        if (dist <= tol && !gameState.firstContactTime) {
+          gameState.firstContactTime = Date.now();
+        }
+
         if (gameState.lastSignedDist !== undefined) {
           const delta = signedDist - gameState.lastSignedDist;
           if (gameState.lastDelta !== undefined) {
@@ -425,6 +430,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const avgDeviation = gameState.distances.length ? Math.round(gameState.distances.reduce((a,b) => a+b,0) / gameState.distances.length) : 0;
     const finalHand = resolveHandUsed();
+    const reactTime = gameState.firstContactTime ? (gameState.firstContactTime - gameState.startTime) : 0;
 
     const session = Storage.endSession({
       patientId: selectedPatient.id,
@@ -439,7 +445,7 @@ document.addEventListener('DOMContentLoaded', () => {
         difficulty: settings.difficulty,
         score: accuracy * 10,
         completionTime: compTime,
-        reactionTime: 0, // Not applicable for continuous trace
+        reactionTime: reactTime,
         handUsed: finalHand,
         pathDeviation: avgDeviation,
         tremorEvents: gameState.tremorEvents,
