@@ -3,7 +3,7 @@
  * All LocalStorage read/write operations
  */
 
-const Storage = (() => {
+export const Storage = (() => {
   const KEYS = {
     patients: 'cognicare_patients',
     sessions: 'cognicare_sessions',

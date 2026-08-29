@@ -6,7 +6,7 @@
 
 ## About
 
-This project extends **CogniCare**(https://github.com/Arjya06/CogniCare), a hospital-focused cognitive rehabilitation platform originally built by **Arjya**. CogniCare uses interactive color-based exercises to support recovery from neurological conditions (stroke, TBI, Parkinson's, dementia, and related conditions) through seven progressive therapy levels, patient management, therapist controls, and performance tracking.
+This project extends **CogniCare**, a hospital-focused cognitive rehabilitation platform originally built by **Arjya**. CogniCare uses interactive color-based exercises to support recovery from neurological conditions (stroke, TBI, Parkinson's, dementia, and related conditions) through seven progressive therapy levels, patient management, therapist controls, and performance tracking.
 
 This repository continues from that base. The plan is to revamp and extend it into a full game-based rehabilitation system — adding movement-based (webcam-tracked) exercises and a visual progress dashboard, per the project brief from Dr. Muthu.
 
@@ -51,15 +51,55 @@ Built with HTML5, CSS3, and vanilla JavaScript (ES6) — no frameworks, no build
 
 ## What's Being Added
 
-| Addition | Files (planned) | Owner |
+The codebase will go through a **refactoring pass first** (ES6 modules, splitting `therapy.js`, standardized session-saving) before new features are layered on — see `docs/DEVELOPMENT_GUIDE.md` Phase 0b for details. This keeps Arjya's existing logic intact while making it easy to plug in new games.
+
+**Target structure after refactor + new modules:**
+
+```
+game-based-rehab-system/
+├── index.html
+├── patient.html
+├── settings.html
+├── reports.html
+├── therapy.html              (existing cognitive game)
+├── movement.html             (NEW — webcam + touch movement games)
+├── css/
+│   ├── core/                 (style.css, responsive.css)
+│   ├── pages/                (reports.css, patient.css)
+│   └── games/                (therapy.css, movement.css [NEW])
+├── js/
+│   ├── core/                 (storage.js, ui.js)
+│   ├── config/                (levels.js)
+│   ├── pages/                  (app.js, patient.js, settings.js, reports.js)
+│   ├── components/              (progress-dashboard.js [NEW])
+│   └── games/
+│       ├── therapy.js              (existing — cognitive game engine)
+│       ├── therapy-setup.js        (NEW — extracted setup UI)
+│       ├── dragdrop.js             (existing)
+│       ├── webcam.js               (NEW — camera + MediaPipe helper)
+│       └── movement.js             (NEW — Reach & Pop + Trace the Path)
+└── docs/
+    └── DEVELOPMENT_GUIDE.md
+```
+
+| Addition | File(s) | Owner |
 |---|---|---|
-| "Reach & Pop" — webcam hand-tracking movement game | `js/games/reachAndPop.js` | Arnav |
-| "Trace the Path" — fine motor control tracing game | `js/games/tracePath.js` | Arjya |
-| Progress visualization dashboard | `js/dashboard.js`, `css/dashboard.css` | Arjya |
-| Unified menu (Cognitive Games / Movement Games / Dashboard) | `index.html`, `app.js` | Arnav + Arjya |
+| Webcam helper | `js/games/webcam.js` | Arnav |
+| "Reach & Pop" — hand-tracking movement game | `js/games/movement.js`, `movement.html` | Arnav |
+| "Trace the Path" — fine motor tracing game | `js/games/movement.js` (2nd mode) | Arjya |
+| Progress dashboard | `js/components/progress-dashboard.js` | Arjya |
+| Unified menu | `index.html`, `js/pages/app.js` | Arnav + Arjya |
 
-See `docs/DEVELOPMENT_GUIDE.md` for the full phase-by-phase roadmap, git workflow, and build steps.
+See `docs/DEVELOPMENT_GUIDE.md` for the full phase-by-phase roadmap, git workflow, and AI prompts used to build each piece.
 
+## Running Locally
+
+```bash
+git clone https://github.com/Arnav-Shrivastava/game-based-rehab-system.git
+cd game-based-rehab-system
+python -m http.server 8000
+# open http://localhost:8000
+```
 
 ## Team
 

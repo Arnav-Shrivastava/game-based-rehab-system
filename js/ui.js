@@ -3,7 +3,9 @@
  * Shared UI utilities: clock, dark mode, fullscreen, toasts, sounds
  */
 
-const UI = (() => {
+import { Storage } from './storage.js';
+
+export const UI = (() => {
 
   /* ---- Clock ---- */
   function startClock() {

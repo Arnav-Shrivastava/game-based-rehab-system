@@ -3,7 +3,7 @@
  * Level definitions and configuration
  */
 
-const LEVEL_DEFS = [
+export const LEVEL_DEFS = [
   {
     num: 1,
     name: 'Single Color',
@@ -88,14 +88,14 @@ const LEVEL_DEFS = [
 /**
  * Get level definition by number (1-based)
  */
-function getLevelDef(num) {
+export function getLevelDef(num) {
   return LEVEL_DEFS.find(l => l.num === num) || LEVEL_DEFS[0];
 }
 
 /**
  * Generate instruction text for a level
  */
-function getLevelInstruction(level, lastColor = null) {
+export function getLevelInstruction(level, lastColor = null) {
   if (level.num === 1) return 'Touch every red ball!';
   if (level.num === 7) return 'Drag each ball to the correct colored basket!';
   if (level.alternateRule) {

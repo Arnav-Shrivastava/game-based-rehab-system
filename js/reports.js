@@ -3,6 +3,9 @@
  * Reports & Analytics page logic with Canvas charts
  */
 
+import { Storage } from './storage.js';
+import { UI } from './ui.js';
+
 document.addEventListener('DOMContentLoaded', () => {
 
   let allSessions = [];

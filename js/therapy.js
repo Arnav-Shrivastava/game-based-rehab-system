@@ -3,6 +3,11 @@
  * Full therapy session controller – all 7 levels
  */
 
+import { Storage } from './storage.js';
+import { UI } from './ui.js';
+import { LEVEL_DEFS, getLevelDef, getLevelInstruction } from './levels.js';
+import { DragDrop } from './dragdrop.js';
+
 document.addEventListener('DOMContentLoaded', () => {
 
   // -------- State --------

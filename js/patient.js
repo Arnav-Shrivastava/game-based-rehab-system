@@ -3,6 +3,9 @@
  * Patient management page logic
  */
 
+import { Storage } from './storage.js';
+import { UI } from './ui.js';
+
 document.addEventListener('DOMContentLoaded', () => {
 
   let editingId = null;

@@ -3,7 +3,9 @@
  * Drag-and-drop functionality for Level 7 basket sorting
  */
 
-const DragDrop = (() => {
+import { UI } from './ui.js';
+
+export const DragDrop = (() => {
 
   let dragging = null;
   let originX = 0, originY = 0;
