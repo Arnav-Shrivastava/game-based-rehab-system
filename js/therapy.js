@@ -401,18 +401,22 @@ document.addEventListener('DOMContentLoaded', () => {
       : 0;
 
     // Save session
-    const session = Storage.addSession({
+    const session = Storage.endSession({
       patientId:    selectedPatient.id,
-      patientName:  selectedPatient.name,
+      gameType:     'therapy',
       level:        selectedLevel.num,
-      levelName:    selectedLevel.name,
-      difficulty:   settings.difficulty,
+      accuracy,
       correct:      gameState.correct,
       wrong:        gameState.wrong,
-      accuracy,
-      reactionTime: avgReact,
-      completionTime: gameState.elapsedSeconds,
-      score:        gameState.score,
+      wrongLog:     gameState.wrongLog,
+      extra: {
+        patientName:  selectedPatient.name,
+        levelName:    selectedLevel.name,
+        difficulty:   settings.difficulty,
+        reactionTime: avgReact,
+        completionTime: gameState.elapsedSeconds,
+        score:        gameState.score,
+      }
     });
 
     // Show results
@@ -492,11 +496,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('therapy-game').style.display    = 'none';
     document.getElementById('therapy-setup').style.display   = '';
     resetGameState();
-    renderPatientList();
     if (!keepLevel) { selectedLevel = null; }
-    renderLevelGrid();
-    renderSettingsPreview();
-    checkReadyToStart();
+    TherapySetup.initSetup(LEVEL_DEFS, startSession);
   }
 
   // -------- Controls --------

@@ -25,7 +25,7 @@ export const TherapySetup = (() => {
 
     const searchEl = document.getElementById('pt-search');
     if (searchEl) {
-      searchEl.addEventListener('input', e => renderPatientList(e.target.value));
+      searchEl.oninput = e => renderPatientList(e.target.value);
     }
     
     const startBtn = document.getElementById('btn-start-session');

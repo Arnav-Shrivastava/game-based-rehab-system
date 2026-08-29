@@ -63,6 +63,21 @@ export const Storage = (() => {
     return getSessions().filter(s => s.patientId === patientId);
   }
 
+  function endSession(sessionData) {
+    // Make sure we have the required fields in the session, backward compatible
+    const session = {
+      patientId: sessionData.patientId,
+      gameType: sessionData.gameType || 'therapy',
+      level: sessionData.level,
+      accuracy: sessionData.accuracy,
+      correct: sessionData.correct,
+      wrong: sessionData.wrong,
+      wrongLog: sessionData.wrongLog || [],
+      ...(sessionData.extra || {})
+    };
+    return addSession(session);
+  }
+
   /* ---- Settings ---- */
   const DEFAULTS = {
     ballCount: 10,
@@ -104,7 +119,7 @@ export const Storage = (() => {
 
   return {
     getPatients, savePatients, addPatient, updatePatient, deletePatient, getPatientById,
-    getSessions, addSession, clearSessions, getSessionsForPatient,
+    getSessions, addSession, endSession, clearSessions, getSessionsForPatient,
     getSettings, saveSettings, resetSettings,
     clearAll, generateId,
   };
