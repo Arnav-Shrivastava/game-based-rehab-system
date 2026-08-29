@@ -38,6 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (ms) { ms.value = s.movementSpeed || 2000; document.getElementById('move-speed-val').textContent = ((s.movementSpeed || 2000) / 1000).toFixed(1) + 's'; }
     const md = document.getElementById('s-move-duration');
     if (md) { md.value = s.movementDuration || 3; document.getElementById('move-duration-val').textContent = s.movementDuration || 3; }
+    const tt = document.getElementById('s-trace-tolerance');
+    if (tt) { tt.value = s.traceTolerance || 40; document.getElementById('trace-tolerance-val').textContent = s.traceTolerance || 40; }
 
     // Sound
     const es = document.getElementById('s-sound');
@@ -104,6 +106,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const smd = document.getElementById('s-move-duration');
     if (smd) smd.addEventListener('input', e => { document.getElementById('move-duration-val').textContent = e.target.value; });
+
+    const stt = document.getElementById('s-trace-tolerance');
+    if (stt) stt.addEventListener('input', e => { document.getElementById('trace-tolerance-val').textContent = e.target.value; });
 
     // Volume slider
     document.getElementById('s-volume').addEventListener('input', e => {
@@ -177,6 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
       movementTargetSize: getActiveToggle('move-target-size-group') || 'medium',
       movementSpeed: parseInt(document.getElementById('s-move-speed') ? document.getElementById('s-move-speed').value : 2000),
       movementDuration: parseInt(document.getElementById('s-move-duration') ? document.getElementById('s-move-duration').value : 3),
+      traceTolerance: parseInt(document.getElementById('s-trace-tolerance') ? document.getElementById('s-trace-tolerance').value : 40),
     };
     Storage.saveSettings(settings);
     UI.showToast('Settings saved successfully! ✓');

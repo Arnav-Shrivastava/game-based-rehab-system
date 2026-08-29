@@ -98,6 +98,7 @@ export const Storage = (() => {
     movementTargetSize: 'medium',
     movementSpeed: 2000,
     movementDuration: 3,
+    traceTolerance: 40,
   };
   function getSettings() {
     try {
