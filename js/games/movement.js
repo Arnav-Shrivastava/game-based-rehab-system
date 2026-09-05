@@ -88,7 +88,17 @@ document.addEventListener('DOMContentLoaded', () => {
       overlay.height = arena.offsetHeight;
     }
 
-    await Webcam.initWebcam(video, canvas);
+    try {
+      await Webcam.initWebcam(video, canvas);
+    } catch (err) {
+      console.warn('Webcam init failed:', err);
+      if (selectedLevel.num === 1) {
+        UI.showToast("Camera access denied or failed. Please allow camera permissions.", "error");
+        document.getElementById('therapy-setup').style.display = '';
+        document.getElementById('therapy-game').style.display = 'none';
+        return;
+      }
+    }
 
     startGameTimer();
     updateHUD();
