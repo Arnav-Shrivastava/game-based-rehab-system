@@ -43,3 +43,31 @@ canvas {
   .chart-card, .section-block, .stat-card { box-shadow: none; border: 1px solid #ccc; }
   .charts-grid { grid-template-columns: 1fr 1fr; }
 }
+
+/* ---- Patient Progress Dashboard ---- */
+.pd-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.pd-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.pd-filters {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+#pd-chart-accuracy,
+#pd-chart-reaction {
+  max-height: 260px !important;
+}
