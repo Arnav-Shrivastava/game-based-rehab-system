@@ -1,111 +1,104 @@
-# Game-Based Rehabilitation System
+# CogniCare: Cognitive & Movement Rehabilitation System
 
-**Faculty Project:** Development of an Interactive Game-Based Rehabilitation System
-**Guide:** Dr. P. Muthu, Biomedical Engineering, SRMIST
-**Project Code:** UR2627BME010 | AY 2026–27
+## Overview
+CogniCare is an interactive, browser-based hospital rehabilitation platform designed for therapists and patients. It leverages scientifically designed color-based cognitive exercises and computer-vision powered movement games to aid in patient recovery. The system provides extensive session tracking, a comprehensive progress dashboard, and a seamless interface tailored for clinical environments.
 
-## About
+## Features
+- **Cognitive Games (7 Progressive Levels):** Ranging from simple single-color recognition to complex multi-color tracking and basket-sorting tasks.
+- **Movement Games:** Physical rehabilitation tracking utilizing webcam gestures (powered by MediaPipe).
+  - *Reach & Pop:* Reach out and pop dynamic targets with your hand.
+  - *Trace the Path:* Trace a wavy path on-screen using hand gestures (or mouse fallback) to test motor control and tremor stability.
+- **Progress Dashboard & Analytics:** Detailed visualizations of accuracy, reaction time, and path deviation over time. Therapists can filter histories by patient, game type, and date.
+- **Patient Management (CRUD):** Secure, local-storage based patient profiles for adding, editing, and managing therapy sessions.
+- **Customizable Settings:** Granular control over ball count, size, game difficulty, session duration, and sound feedback. Dark-mode toggle for optimal viewing environments.
 
-This project extends **CogniCare**, a hospital-focused cognitive rehabilitation platform originally built by **Arjya**. CogniCare uses interactive color-based exercises to support recovery from neurological conditions (stroke, TBI, Parkinson's, dementia, and related conditions) through seven progressive therapy levels, patient management, therapist controls, and performance tracking.
+## Tech Stack
+- **Frontend:** Vanilla HTML5, CSS3, JavaScript (ES6 Modules)
+- **Computer Vision:** MediaPipe Hands (Camera, Drawing Utils) for webcam-based hand tracking
+- **Data Visualization:** Chart.js for responsive analytics graphs
+- **Storage:** HTML5 `localStorage` (No backend database required for local use)
 
-This repository continues from that base. The plan is to revamp and extend it into a full game-based rehabilitation system — adding movement-based (webcam-tracked) exercises and a visual progress dashboard, per the project brief from Dr. Muthu.
-
-## Current State (Inherited from Arjya's CogniCare)
-
-The existing codebase is organized as follows:
-
-```
-game-based-rehab-system/
-├── index.html
-├── patient.html
-├── reports.html
-├── settings.html
-├── therapy.html
-├── README.md
+## Folder Structure
+```text
+.
 ├── css/
-│   ├── style.css
-│   ├── responsive.css
-│   ├── therapy.css
-│   └── reports.css
-└── js/
-    ├── app.js
-    ├── patient.js
-    ├── therapy.js
-    ├── levels.js
-    ├── dragdrop.js
-    ├── reports.js
-    ├── settings.js
-    ├── storage.js
-    └── ui.js
-```
-
-**Existing features (built by Arjya):**
-- Seven progressive color-therapy levels (`levels.js`, `dragdrop.js`, `therapy.js`)
-- Patient management — add/edit/delete, profiles, session history (`patient.js`)
-- Therapist controls — difficulty, ball size/count, duration, sound, speed (`settings.js`)
-- Performance tracking and reports (`reports.js`, `reports.html`, `reports.css`)
-- Local data persistence (`storage.js`)
-- Responsive, accessible, tablet-friendly UI (`responsive.css`, `ui.js`)
-
-Built with HTML5, CSS3, and vanilla JavaScript (ES6) — no frameworks, no build step.
-
-## What's Being Added
-
-The codebase will go through a **refactoring pass first** (ES6 modules, splitting `therapy.js`, standardized session-saving) before new features are layered on — see `docs/DEVELOPMENT_GUIDE.md` Phase 0b for details. This keeps Arjya's existing logic intact while making it easy to plug in new games.
-
-**Target structure after refactor + new modules:**
-
-```
-game-based-rehab-system/
-├── index.html
-├── patient.html
-├── settings.html
-├── reports.html
-├── therapy.html              (existing cognitive game)
-├── movement.html             (NEW — webcam + touch movement games)
-├── css/
-│   ├── core/                 (style.css, responsive.css)
-│   ├── pages/                (reports.css, patient.css)
-│   └── games/                (therapy.css, movement.css [NEW])
+│   ├── reports.css         # Styling for analytics and charts
+│   ├── responsive.css      # Mobile & tablet responsiveness
+│   ├── style.css           # Global tokens, buttons, and layout
+│   └── therapy.css         # Styles specific to the game arena
 ├── js/
-│   ├── core/                 (storage.js, ui.js)
-│   ├── config/                (levels.js)
-│   ├── pages/                  (app.js, patient.js, settings.js, reports.js)
-│   ├── components/              (progress-dashboard.js [NEW])
+│   ├── app.js              # Dashboard initialization and splash screen
+│   ├── dragdrop.js         # Logic for Level 7 basket sorting
+│   ├── levels.js           # Cognitive game definitions and instructions
+│   ├── patient.js          # Patient CRUD logic
+│   ├── reports.js          # Legacy reports page logic
+│   ├── settings.js         # Settings & preferences manager
+│   ├── storage.js          # LocalStorage abstraction layer
+│   ├── therapy.js          # Cognitive session controller
+│   ├── ui.js               # Global UI utilities (toasts, dark mode, sound)
+│   ├── components/
+│   │   └── progress-dashboard.js # New patient analytics dashboard component
 │   └── games/
-│       ├── therapy.js              (existing — cognitive game engine)
-│       ├── therapy-setup.js        (NEW — extracted setup UI)
-│       ├── dragdrop.js             (existing)
-│       ├── webcam.js               (NEW — camera + MediaPipe helper)
-│       └── movement.js             (NEW — Reach & Pop + Trace the Path)
-└── docs/
-    └── DEVELOPMENT_GUIDE.md
+│       ├── movement.js     # Movement games controller (Reach & Pop, Trace)
+│       ├── therapy-setup.js# Shared pre-game setup UI
+│       └── webcam.js       # MediaPipe camera integration wrapper
+├── index.html              # Main landing dashboard
+├── movement.html           # Movement games interface
+├── patient.html            # Patient management interface
+├── reports.html            # Progress dashboard and analytics viewer
+├── settings.html           # System configuration interface
+└── therapy.html            # Cognitive games interface
 ```
 
-| Addition | File(s) | Owner |
-|---|---|---|
-| Webcam helper | `js/games/webcam.js` | Arnav |
-| "Reach & Pop" — hand-tracking movement game | `js/games/movement.js`, `movement.html` | Arnav |
-| "Trace the Path" — fine motor tracing game | `js/games/movement.js` (2nd mode) | Arjya |
-| Progress dashboard | `js/components/progress-dashboard.js` | Arjya |
-| Unified menu | `index.html`, `js/pages/app.js` | Arnav + Arjya |
+## Setup & Run Instructions
+Because the application uses ES6 modules (`type="module"`) and accesses the webcam, it must be served over HTTP/HTTPS rather than via the `file://` protocol.
 
-See `docs/DEVELOPMENT_GUIDE.md` for the full phase-by-phase roadmap, git workflow, and AI prompts used to build each piece.
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Arnav-Shrivastava/game-based-rehab-system.git
+   cd game-based-rehab-system
+   ```
 
-## Running Locally
+2. **Start a local HTTP Server:**
+   You can use any standard static server. For example:
+   - **Using Python 3:**
+     ```bash
+     python -m http.server 8000
+     ```
+   - **Using Node.js (http-server):**
+     ```bash
+     npx http-server -p 8000
+     ```
 
-```bash
-git clone https://github.com/Arnav-Shrivastava/game-based-rehab-system.git
-cd game-based-rehab-system
-python -m http.server 8000
-# open http://localhost:8000
+3. **Open the Application:**
+   Navigate to `http://localhost:8000` in a modern web browser.
+   *Note: Ensure you allow webcam permissions when accessing the Movement Games (`movement.html`).*
+
+## Architecture Diagram
+```text
++-----------------------------------------------------------------+
+|                         User Interface                          |
+|  (index.html, therapy.html, movement.html, reports.html, etc.)  |
++-----------------------------------------------------------------+
+          |                       |                       |
+          v                       v                       v
++-------------------+   +-------------------+   +-------------------+
+|  Patient Config   |   |   Game Engines    |   |    Analytics &    |
+|   (patient.js,    |   |   (therapy.js,    |   |     Reporting     |
+|   settings.js)    |   |    movement.js)   |   | (progress-dash..) |
++-------------------+   +-------------------+   +-------------------+
+          |                       |                       |
+          |           +-----------------------+           |
+          |           |   Computer Vision     |           |
+          |           |  (webcam.js + API)    |           |
+          |           +-----------------------+           |
+          v                       v                       v
++-----------------------------------------------------------------+
+|                       Storage Layer                             |
+|               (storage.js -> window.localStorage)               |
++-----------------------------------------------------------------+
 ```
 
-## Team
-
-- **Arjya** — original CogniCare platform (patient management, 7 therapy levels, tracking, reports)
-- **Arnav** — movement module (Reach & Pop), integration, testing & documentation
-
-## Status
-
-🚧 In active development — continuing and extending Arjya's CogniCare base per Dr. Muthu's project brief.
+## Credits
+- **Original CogniCare Build:** Designed and built by **Arjya**.
+- **Movement Games & Analytics Extension:** Developed to expand the platform's capabilities with physical rehabilitation tracking (MediaPipe) and advanced dashboard analytics.
