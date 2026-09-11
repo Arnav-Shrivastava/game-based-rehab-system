@@ -279,7 +279,6 @@ export const ProgressDashboard = (() => {
   }
 
   function renderDetailView(sessions) {
-    // Check which extra fields are present in the filtered sessions
     const extraFieldsSet = new Set();
     sessions.forEach(s => {
       if (s.handUsed !== undefined) extraFieldsSet.add('handUsed');
@@ -287,6 +286,11 @@ export const ProgressDashboard = (() => {
       if (s.pathDeviation !== undefined) extraFieldsSet.add('pathDeviation');
       if (s.tremorEvents !== undefined) extraFieldsSet.add('tremorEvents');
       if (s.outOfBoundsTime !== undefined) extraFieldsSet.add('outOfBoundsTime');
+      if (s.affectedSide !== undefined) extraFieldsSet.add('affectedSide');
+      if (s.bothHandsUsedPercent !== undefined) extraFieldsSet.add('bothHandsUsedPercent');
+      if (s.avgSyncDelay !== undefined) extraFieldsSet.add('avgSyncDelay');
+      if (s.promptsNeeded !== undefined) extraFieldsSet.add('promptsNeeded');
+      if (s.stepsIncorrect !== undefined) extraFieldsSet.add('stepsIncorrect');
     });
 
     const extraFields = Array.from(extraFieldsSet);
@@ -305,7 +309,12 @@ export const ProgressDashboard = (() => {
       avgReachDistance: 'Avg Reach Dist',
       pathDeviation: 'Path Deviation',
       tremorEvents: 'Tremor Events',
-      outOfBoundsTime: 'Out of Bounds (s)'
+      outOfBoundsTime: 'Out of Bounds (s)',
+      affectedSide: 'Affected Side Priority',
+      bothHandsUsedPercent: 'Bilateral Usage (%)',
+      avgSyncDelay: 'Sync Delay (ms)',
+      promptsNeeded: 'Prompts Needed',
+      stepsIncorrect: 'Steps Incorrect'
     };
 
     extraFields.forEach(f => {
