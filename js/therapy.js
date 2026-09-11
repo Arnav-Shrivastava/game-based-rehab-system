@@ -51,6 +51,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('game-level-label').textContent  = 'Level ' + selectedLevel.num;
 
     buildArena();
+    if (selectedLevel.simonMode) {
+      setTimeout(() => startSimonRound(3), 1000);
+    }
     startGameTimer();
     updateHUD();
     updateInstruction();
@@ -74,6 +77,11 @@ document.addEventListener('DOMContentLoaded', () => {
       timerInterval: null,
       elapsedSeconds: 0,
       sessionTimerInterval: null,
+      simonSequence: [],
+      simonPlayerIndex: 0,
+      roundsCompleted: 0,
+      simonActive: false,
+      sequenceLength: 0,
     };
   }
 
@@ -216,11 +224,90 @@ document.addEventListener('DOMContentLoaded', () => {
     return ball;
   }
 
+  // -------- Simon Mode Logic --------
+  function startSimonRound(startLength = null) {
+    if (!gameState.running) return;
+    gameState.simonActive = true;
+    gameState.simonPlayerIndex = 0;
+    
+    gameState.balls.forEach(b => b.style.pointerEvents = 'none');
+    
+    if (gameState.simonSequence.length === 0 && startLength) {
+      for (let i = 0; i < startLength; i++) {
+        const randomBall = gameState.balls[Math.floor(Math.random() * gameState.balls.length)];
+        gameState.simonSequence.push(randomBall);
+      }
+    } else {
+      const randomBall = gameState.balls[Math.floor(Math.random() * gameState.balls.length)];
+      gameState.simonSequence.push(randomBall);
+    }
+    
+    gameState.sequenceLength = Math.max(gameState.sequenceLength, gameState.simonSequence.length);
+    document.getElementById('gi-text').textContent = 'Watch the sequence...';
+    
+    setTimeout(() => playSimonSequence(0), 500);
+  }
+
+  function playSimonSequence(index) {
+    if (!gameState.running) return;
+    if (index >= gameState.simonSequence.length) {
+      gameState.simonActive = false;
+      gameState.balls.forEach(b => b.style.pointerEvents = 'auto');
+      updateInstruction();
+      gameState.reactionStart = Date.now();
+      return;
+    }
+    
+    const ball = gameState.simonSequence[index];
+    ball.classList.add('simon-flash');
+    UI.Sounds.pop();
+    
+    setTimeout(() => {
+      ball.classList.remove('simon-flash');
+      setTimeout(() => {
+        playSimonSequence(index + 1);
+      }, 400);
+    }, 600);
+  }
+
   // -------- Ball Click Handler --------
   function handleBallClick(ball) {
     if (!gameState.running || gameState.paused) return;
     const color = ball.dataset.color;
     const level = selectedLevel;
+
+    if (level.simonMode) {
+      if (gameState.simonActive) return;
+      
+      const expectedBall = gameState.simonSequence[gameState.simonPlayerIndex];
+      if (ball === expectedBall) {
+        gameState.simonPlayerIndex++;
+        gameState.correct++;
+        gameState.score += 10;
+        
+        ball.classList.add('simon-flash');
+        UI.Sounds.pop();
+        setTimeout(() => ball.classList.remove('simon-flash'), 250);
+        
+        if (gameState.simonPlayerIndex >= gameState.simonSequence.length) {
+          gameState.roundsCompleted++;
+          updateHUD();
+          setTimeout(() => startSimonRound(), 1000);
+        } else {
+          updateHUD();
+        }
+      } else {
+        gameState.wrong++;
+        gameState.wrongLog.push({ time: gameState.elapsedSeconds, color, reason: 'simon-wrong', expected: expectedBall.dataset.color });
+        showError(`❌ Wrong sequence!`);
+        ball.classList.add('wrong-flash');
+        setTimeout(() => ball.classList.remove('wrong-flash'), 400);
+        UI.Sounds.wrong();
+        updateHUD(true);
+        setTimeout(() => finishSession(), 1000);
+      }
+      return;
+    }
 
     // Alternating rule check
     if (level.alternateRule && gameState.lastColor === color) {
@@ -401,9 +488,10 @@ document.addEventListener('DOMContentLoaded', () => {
       : 0;
 
     // Save session
+    const gameTypeStr = selectedLevel.num === 8 ? 'cognitive-level-8' : 'therapy';
     const session = Storage.endSession({
       patientId:    selectedPatient.id,
-      gameType:     'therapy',
+      gameType:     gameTypeStr,
       level:        selectedLevel.num,
       accuracy,
       correct:      gameState.correct,
@@ -416,6 +504,8 @@ document.addEventListener('DOMContentLoaded', () => {
         reactionTime: avgReact,
         completionTime: gameState.elapsedSeconds,
         score:        gameState.score,
+        sequenceLength: gameState.sequenceLength,
+        roundsCompleted: gameState.roundsCompleted,
       }
     });
 
@@ -476,7 +566,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <span class="wl-time">⏱ ${mm(entry.time)}:${ss(entry.time)}</span>
         <span class="wl-dot" style="background:var(--${entry.color})"></span>
         <span class="wl-color">${capitalize(entry.color)}</span>
-        <span class="wl-reason">${entry.reason === 'same-color' ? 'Same color repeated' : `Wrong basket (put in ${capitalize(entry.expected||'')} basket)`}</span>
+        <span class="wl-reason">${entry.reason === 'same-color' ? 'Same color repeated' : entry.reason === 'simon-wrong' ? 'Wrong sequence (expected ' + capitalize(entry.expected||'') + ')' : `Wrong basket (put in ${capitalize(entry.expected||'')} basket)`}</span>
       </div>
     `).join('');
   }

@@ -136,6 +136,14 @@
 .ball.wrong-flash { animation: shake 0.35s ease, glowRed 0.35s ease; }
 @keyframes glowRed { 0%,100%{box-shadow:0 4px 12px rgba(0,0,0,0.2)} 50%{box-shadow:0 0 24px 8px rgba(231,76,60,0.6)} }
 
+.ball.simon-flash {
+  transform: scale(1.25);
+  filter: brightness(1.4);
+  box-shadow: 0 0 20px #fff;
+  z-index: 10;
+  transition: all 0.15s ease;
+}
+
 /* Level 7 - Groups Layout */
 .color-group-wrap { display: flex; gap: 24px; padding: 24px; justify-content: center; flex-wrap: wrap; }
 .color-group { background: var(--bg); border-radius: var(--radius-sm); padding: 16px; border: 2px solid var(--border); min-width: 140px; }

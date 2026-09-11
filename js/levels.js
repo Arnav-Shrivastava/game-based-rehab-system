@@ -83,6 +83,18 @@ export const LEVEL_DEFS = [
     ballSizeMultiplier: 1,
     speedMultiplier: 1,
   },
+  {
+    num: 8,
+    name: 'Pattern Repeat',
+    shortDesc: 'Simon-Says Memory',
+    fullDesc: 'Watch the sequence of flashing balls and repeat it in the same order. Each round adds one more color to the sequence. A mistake ends the round.',
+    colors: ['red', 'green', 'blue'],
+    layout: 'free',
+    alternateRule: false,
+    simonMode: true,
+    ballSizeMultiplier: 1,
+    speedMultiplier: 1,
+  },
 ];
 
 /**
@@ -98,6 +110,7 @@ export function getLevelDef(num) {
 export function getLevelInstruction(level, lastColor = null) {
   if (level.num === 1) return 'Touch every red ball!';
   if (level.num === 7) return 'Drag each ball to the correct colored basket!';
+  if (level.num === 8) return 'Watch the flashing sequence and repeat it!';
   if (level.alternateRule) {
     if (!lastColor) return `Touch a ${level.colors[0]} ball to begin.`;
     const others = level.colors.filter(c => c !== lastColor);
