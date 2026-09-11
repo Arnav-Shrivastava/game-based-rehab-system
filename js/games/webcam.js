@@ -12,6 +12,7 @@ export const Webcam = (() => {
   let camera = null;
 
   let currentFingertip = null;
+  let currentFingertips = {};
   let currentHandedness = null;
 
   async function initWebcam(videoEl, canvasEl) {
@@ -58,6 +59,7 @@ export const Webcam = (() => {
     canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
     
     currentFingertip = null;
+    currentFingertips = {};
     currentHandedness = null;
 
     if (results.multiHandLandmarks && results.multiHandedness && results.multiHandLandmarks.length > 0) {
@@ -70,30 +72,29 @@ export const Webcam = (() => {
         currentHandedness = results.multiHandedness[0].label; 
       }
 
-      // Track the first detected hand's index finger tip (landmark 8)
-      const landmarks = results.multiHandLandmarks[0];
-      const indexTip = landmarks[8];
-      
-      currentFingertip = {
-        // Mirror the x coordinate so it aligns with the mirrored canvas
-        x: (1 - indexTip.x) * canvasElement.width,
-        y: indexTip.y * canvasElement.height
-      };
+      for (let i = 0; i < results.multiHandLandmarks.length; i++) {
+        const marks = results.multiHandLandmarks[i];
+        const label = results.multiHandedness[i].label;
+        const indexTip = marks[8];
+        const pos = {
+          x: (1 - indexTip.x) * canvasElement.width,
+          y: indexTip.y * canvasElement.height
+        };
+        currentFingertips[label] = pos;
 
-      // Draw hand landmarks (on the mirrored canvas, so they use raw x)
-      if (window.drawConnectors && window.drawLandmarks) {
-        for (const marks of results.multiHandLandmarks) {
+        // Keep currentFingertip for backward compatibility (first hand)
+        if (i === 0) currentFingertip = pos;
+
+        if (window.drawConnectors && window.drawLandmarks) {
           window.drawConnectors(canvasCtx, marks, window.HAND_CONNECTIONS, {color: '#00FF00', lineWidth: 2});
           window.drawLandmarks(canvasCtx, marks, {color: '#FF0000', lineWidth: 1, radius: 2});
         }
-      }
 
-      // Draw a bigger blue dot on the index tip
-      canvasCtx.beginPath();
-      // Draw using raw x because canvas is still scaled(-1, 1)
-      canvasCtx.arc(indexTip.x * canvasElement.width, indexTip.y * canvasElement.height, 8, 0, 2 * Math.PI);
-      canvasCtx.fillStyle = '#0000FF';
-      canvasCtx.fill();
+        canvasCtx.beginPath();
+        canvasCtx.arc(indexTip.x * canvasElement.width, indexTip.y * canvasElement.height, 8, 0, 2 * Math.PI);
+        canvasCtx.fillStyle = '#0000FF';
+        canvasCtx.fill();
+      }
     }
     
     canvasCtx.restore();
@@ -101,6 +102,10 @@ export const Webcam = (() => {
 
   function getFingertipPosition() {
     return currentFingertip;
+  }
+
+  function getFingertipPositions() {
+    return currentFingertips;
   }
 
   function getHandedness() {
@@ -116,5 +121,5 @@ export const Webcam = (() => {
     }
   }
 
-  return { initWebcam, getFingertipPosition, getHandedness, stop };
+  return { initWebcam, getFingertipPosition, getFingertipPositions, getHandedness, stop };
 })();

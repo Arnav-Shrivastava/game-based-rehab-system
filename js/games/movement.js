@@ -15,6 +15,12 @@ const MOVEMENT_MODES = [
     name: 'Trace the Path',
     desc: 'Trace the wavy line from start to finish.',
     fullDesc: 'Use your hand or mouse to trace the path displayed on the screen. Stay as close to the center as possible!'
+  },
+  {
+    num: 3,
+    name: 'Bilateral Bubble Catch',
+    desc: 'Catch bubbles with both hands at the same time.',
+    fullDesc: 'Use both hands to catch paired bubbles that appear. You must touch both halves within a short time window.'
   }
 ];
 
@@ -48,7 +54,13 @@ document.addEventListener('DOMContentLoaded', () => {
     lastTracePoint: null,
     lastSignedDist: undefined,
     lastDelta: undefined,
-    reachedEnd: false
+    reachedEnd: false,
+    
+    // Bilateral specific
+    bilateralTargets: [],
+    bothHandsUsedCount: 0,
+    syncDelays: [],
+    totalCatches: 0
   };
 
   TherapySetup.initSetup(MOVEMENT_MODES, startSession);
@@ -110,6 +122,9 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (selectedLevel.num === 2) {
       generatePath(overlay.width, overlay.height);
       gameState.animationFrameId = requestAnimationFrame(gameLoopTrace);
+    } else if (selectedLevel.num === 3) {
+      startSpawningBilateral();
+      gameState.animationFrameId = requestAnimationFrame(gameLoopBilateral);
     }
   }
 
@@ -140,7 +155,12 @@ document.addEventListener('DOMContentLoaded', () => {
       lastSignedDist: undefined,
       lastDelta: undefined,
       reachedEnd: false,
-      firstContactTime: null
+      firstContactTime: null,
+      
+      bilateralTargets: [],
+      bothHandsUsedCount: 0,
+      syncDelays: [],
+      totalCatches: 0
     };
     arena.querySelectorAll('.ball').forEach(b => b.remove());
     const overlay = document.getElementById('overlay-canvas');
@@ -162,8 +182,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (gameState.elapsedSeconds >= maxSeconds) {
         if (selectedLevel.num === 1) {
           finishSessionPop();
-        } else {
+        } else if (selectedLevel.num === 2) {
           finishSessionTrace(); // Will mark as incomplete due to timeout
+        } else if (selectedLevel.num === 3) {
+          finishSessionBilateral();
         }
       }
     }, 1000);
@@ -298,6 +320,184 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
     showResults(accuracy, avgReact, session);
+  }
+
+  /* ================= BILATERAL BUBBLE CATCH ================= */
+  function startSpawningBilateral() {
+    const speedMs = settings.movementSpeed || 2000;
+    gameState.targetSpawnInterval = setInterval(() => {
+      if (gameState.paused || !gameState.running) return;
+      const maxTargets = settings.movementTargetCount || 5;
+      if (gameState.bilateralTargets.length < maxTargets / 2) spawnBilateralTarget();
+    }, speedMs * 1.5);
+  }
+
+  function spawnBilateralTarget() {
+    const sizeCls = getBallSizeCls(settings.movementTargetSize || 'medium');
+    const ballPx = sizeCls === 'ball-sm' ? 44 : sizeCls === 'ball-lg' ? 76 : 60;
+    const margin = 20;
+    
+    const lx = margin + Math.random() * (arena.offsetWidth / 2 - ballPx - margin);
+    const ly = margin + Math.random() * (arena.offsetHeight - ballPx - margin * 2);
+    
+    const rx = arena.offsetWidth / 2 + margin + Math.random() * (arena.offsetWidth / 2 - ballPx - margin * 2);
+    const ry = margin + Math.random() * (arena.offsetHeight - ballPx - margin * 2);
+
+    const leftBall = document.createElement('div');
+    leftBall.className = `ball ball-blue ${sizeCls}`;
+    leftBall.style.left = lx + 'px';
+    leftBall.style.top = ly + 'px';
+    leftBall.dataset.cx = lx + ballPx / 2;
+    leftBall.dataset.cy = ly + ballPx / 2;
+    leftBall.dataset.r = ballPx / 2;
+    
+    const rightBall = document.createElement('div');
+    rightBall.className = `ball ball-green ${sizeCls}`;
+    rightBall.style.left = rx + 'px';
+    rightBall.style.top = ry + 'px';
+    rightBall.dataset.cx = rx + ballPx / 2;
+    rightBall.dataset.cy = ry + ballPx / 2;
+    rightBall.dataset.r = ballPx / 2;
+
+    arena.appendChild(leftBall);
+    arena.appendChild(rightBall);
+
+    gameState.bilateralTargets.push({
+      leftBall,
+      rightBall,
+      leftHitTime: null,
+      leftHitLabel: null,
+      rightHitTime: null,
+      rightHitLabel: null,
+      spawnTime: Date.now()
+    });
+  }
+
+  function gameLoopBilateral() {
+    if (!gameState.running) return;
+    if (!gameState.paused) {
+      const fingertips = Webcam.getFingertipPositions();
+      const hand = Webcam.getHandedness();
+      if (hand) gameState.handsUsed.add(hand);
+
+      const now = Date.now();
+      const timeoutMs = (settings.movementSpeed || 2000) * 2.5; 
+
+      for (let i = gameState.bilateralTargets.length - 1; i >= 0; i--) {
+        const pair = gameState.bilateralTargets[i];
+        
+        if (!pair.leftHitTime && pair.leftBall) {
+          const cx = parseFloat(pair.leftBall.dataset.cx);
+          const cy = parseFloat(pair.leftBall.dataset.cy);
+          const r = parseFloat(pair.leftBall.dataset.r);
+          for (const [label, pos] of Object.entries(fingertips)) {
+            if (Math.sqrt((pos.x - cx)**2 + (pos.y - cy)**2) < r + 20) {
+              pair.leftHitTime = now;
+              pair.leftHitLabel = label;
+              pair.leftBall.classList.add('popping');
+              UI.Sounds.pop();
+              break;
+            }
+          }
+        }
+
+        if (!pair.rightHitTime && pair.rightBall) {
+          const cx = parseFloat(pair.rightBall.dataset.cx);
+          const cy = parseFloat(pair.rightBall.dataset.cy);
+          const r = parseFloat(pair.rightBall.dataset.r);
+          for (const [label, pos] of Object.entries(fingertips)) {
+            if (Math.sqrt((pos.x - cx)**2 + (pos.y - cy)**2) < r + 20) {
+              pair.rightHitTime = now;
+              pair.rightHitLabel = label;
+              pair.rightBall.classList.add('popping');
+              UI.Sounds.pop();
+              break;
+            }
+          }
+        }
+
+        if (pair.leftHitTime && pair.rightHitTime) {
+          const syncDelay = Math.abs(pair.leftHitTime - pair.rightHitTime);
+          if (syncDelay <= 600) { 
+            gameState.correct++;
+            gameState.score += 20;
+            gameState.totalCatches++;
+            gameState.syncDelays.push(syncDelay);
+            if (pair.leftHitLabel !== pair.rightHitLabel) {
+              gameState.bothHandsUsedCount++;
+            }
+            updateHUD();
+          } else {
+            gameState.wrong++;
+            UI.Sounds.wrong();
+            updateHUD(true);
+          }
+          setTimeout(() => { 
+            if(pair.leftBall && pair.leftBall.parentNode) pair.leftBall.remove(); 
+            if(pair.rightBall && pair.rightBall.parentNode) pair.rightBall.remove(); 
+          }, 300);
+          gameState.bilateralTargets.splice(i, 1);
+        } else if (now - pair.spawnTime > timeoutMs) {
+          gameState.wrong++;
+          UI.Sounds.wrong();
+          if (pair.leftBall && !pair.leftHitTime) pair.leftBall.classList.add('wrong-flash');
+          if (pair.rightBall && !pair.rightHitTime) pair.rightBall.classList.add('wrong-flash');
+          setTimeout(() => { 
+            if(pair.leftBall && pair.leftBall.parentNode) pair.leftBall.remove(); 
+            if(pair.rightBall && pair.rightBall.parentNode) pair.rightBall.remove(); 
+          }, 300);
+          gameState.bilateralTargets.splice(i, 1);
+          updateHUD(true);
+        } else if ((pair.leftHitTime && now - pair.leftHitTime > 600) || (pair.rightHitTime && now - pair.rightHitTime > 600)) {
+          gameState.wrong++;
+          UI.Sounds.wrong();
+          if (pair.leftBall && !pair.leftHitTime) pair.leftBall.classList.add('wrong-flash');
+          if (pair.rightBall && !pair.rightHitTime) pair.rightBall.classList.add('wrong-flash');
+          setTimeout(() => { 
+            if(pair.leftBall && pair.leftBall.parentNode) pair.leftBall.remove(); 
+            if(pair.rightBall && pair.rightBall.parentNode) pair.rightBall.remove(); 
+          }, 300);
+          gameState.bilateralTargets.splice(i, 1);
+          updateHUD(true);
+        }
+      }
+    }
+    gameState.animationFrameId = requestAnimationFrame(gameLoopBilateral);
+  }
+
+  function finishSessionBilateral() {
+    gameState.running = false;
+    clearInterval(gameState.sessionTimerInterval);
+    clearInterval(gameState.targetSpawnInterval);
+    cancelAnimationFrame(gameState.animationFrameId);
+    Webcam.stop();
+    UI.Sounds.complete();
+
+    const total = gameState.correct + gameState.wrong;
+    const accuracy = total > 0 ? Math.round((gameState.correct / total) * 100) : 100;
+    const bothHandsUsedPercent = gameState.totalCatches > 0 ? Math.round((gameState.bothHandsUsedCount / gameState.totalCatches) * 100) : 0;
+    const avgSyncDelay = gameState.syncDelays.length ? Math.round(gameState.syncDelays.reduce((a,b) => a+b,0) / gameState.syncDelays.length) : 0;
+    const finalHand = resolveHandUsed();
+
+    const session = Storage.endSession({
+      patientId: selectedPatient.id,
+      gameType: 'movement-bilateral-catch',
+      level: selectedLevel.num,
+      accuracy,
+      correct: gameState.correct,
+      wrong: gameState.wrong,
+      extra: {
+        patientName: selectedPatient.name,
+        levelName: selectedLevel.name,
+        difficulty: settings.difficulty,
+        score: gameState.score,
+        completionTime: gameState.elapsedSeconds,
+        handUsed: finalHand,
+        bothHandsUsedPercent,
+        avgSyncDelay
+      }
+    });
+    showResults(accuracy, avgSyncDelay, session);
   }
 
   /* ================= TRACE THE PATH ================= */
