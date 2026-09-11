@@ -228,29 +228,35 @@ document.addEventListener('DOMContentLoaded', () => {
         const hand = Webcam.getHandedness();
         if (hand) gameState.handsUsed.add(hand);
 
-        for (let i = gameState.targets.length - 1; i >= 0; i--) {
-          const ball = gameState.targets[i];
-          const cx = parseFloat(ball.dataset.cx);
-          const cy = parseFloat(ball.dataset.cy);
-          const r = parseFloat(ball.dataset.r);
-          
-          const dist = Math.sqrt((fingertip.x - cx)**2 + (fingertip.y - cy)**2);
-          if (dist < r + 20) { 
-            ball.classList.add('popping');
-            UI.Sounds.pop();
-            const hitTime = Date.now();
-            gameState.reactionTimes.push(hitTime - parseInt(ball.dataset.spawnTime));
-            
-            const startX = arena.offsetWidth / 2;
-            const startY = arena.offsetHeight;
-            gameState.distances.push(Math.sqrt((cx - startX)**2 + (cy - startY)**2));
+        let allowPop = true;
+        if (settings.affectedSide === 'left' && hand !== 'Left') allowPop = false;
+        if (settings.affectedSide === 'right' && hand !== 'Right') allowPop = false;
 
-            setTimeout(() => { if(ball.parentNode) ball.remove(); }, 300);
-            gameState.targets.splice(i, 1);
+        if (allowPop) {
+          for (let i = gameState.targets.length - 1; i >= 0; i--) {
+            const ball = gameState.targets[i];
+            const cx = parseFloat(ball.dataset.cx);
+            const cy = parseFloat(ball.dataset.cy);
+            const r = parseFloat(ball.dataset.r);
             
-            gameState.correct++;
-            gameState.score += 10;
-            updateHUD();
+            const dist = Math.sqrt((fingertip.x - cx)**2 + (fingertip.y - cy)**2);
+            if (dist < r + 20) { 
+              ball.classList.add('popping');
+              UI.Sounds.pop();
+              const hitTime = Date.now();
+              gameState.reactionTimes.push(hitTime - parseInt(ball.dataset.spawnTime));
+              
+              const startX = arena.offsetWidth / 2;
+              const startY = arena.offsetHeight;
+              gameState.distances.push(Math.sqrt((cx - startX)**2 + (cy - startY)**2));
+
+              setTimeout(() => { if(ball.parentNode) ball.remove(); }, 300);
+              gameState.targets.splice(i, 1);
+              
+              gameState.correct++;
+              gameState.score += 10;
+              updateHUD();
+            }
           }
         }
       }
@@ -287,7 +293,8 @@ document.addEventListener('DOMContentLoaded', () => {
         completionTime: gameState.elapsedSeconds,
         reactionTime: avgReact,
         handUsed: finalHand,
-        avgReachDistance: avgDist
+        avgReachDistance: avgDist,
+        affectedSide: settings.affectedSide || 'none'
       }
     });
     showResults(accuracy, avgReact, session);

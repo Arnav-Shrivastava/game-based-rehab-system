@@ -116,6 +116,15 @@
         </div>
 
         <div class="form-group">
+          <label>Affected Side Priority</label>
+          <div class="btn-group" id="affected-side-group">
+            <button class="btn-toggle active" data-val="none">None</button>
+            <button class="btn-toggle" data-val="left">Left</button>
+            <button class="btn-toggle" data-val="right">Right</button>
+          </div>
+        </div>
+
+        <div class="form-group">
           <label for="s-move-target-count">Simultaneous Targets <span class="range-val" id="move-target-count-val">5</span></label>
           <input type="range" id="s-move-target-count" class="range-slider" min="1" max="15" value="5" step="1" />
           <div class="range-labels"><span>1 (min)</span><span>15 (max)</span></div>

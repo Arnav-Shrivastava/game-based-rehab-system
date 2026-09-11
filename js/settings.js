@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (td) { td.value = s.timerDuration; document.getElementById('timer-val').textContent = s.timerDuration; }
 
     // Movement
+    setActiveToggle('affected-side-group', s.affectedSide || 'none');
     const mtc = document.getElementById('s-move-target-count');
     if (mtc) { mtc.value = s.movementTargetCount || 5; document.getElementById('move-target-count-val').textContent = s.movementTargetCount || 5; }
     setActiveToggle('move-target-size-group', s.movementTargetSize || 'medium');
@@ -92,6 +93,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Movement Settings
+    const asg = document.getElementById('affected-side-group');
+    if (asg) asg.addEventListener('click', e => {
+      const btn = e.target.closest('.btn-toggle');
+      if (btn) setActiveToggle('affected-side-group', btn.dataset.val);
+    });
+
     const smtc = document.getElementById('s-move-target-count');
     if (smtc) smtc.addEventListener('input', e => { document.getElementById('move-target-count-val').textContent = e.target.value; });
 
@@ -183,6 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
       movementSpeed: parseInt(document.getElementById('s-move-speed') ? document.getElementById('s-move-speed').value : 2000),
       movementDuration: parseInt(document.getElementById('s-move-duration') ? document.getElementById('s-move-duration').value : 3),
       traceTolerance: parseInt(document.getElementById('s-trace-tolerance') ? document.getElementById('s-trace-tolerance').value : 40),
+      affectedSide: getActiveToggle('affected-side-group') || 'none',
     };
     Storage.saveSettings(settings);
     UI.showToast('Settings saved successfully! ✓');

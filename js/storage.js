@@ -99,6 +99,7 @@ export const Storage = (() => {
     movementSpeed: 2000,
     movementDuration: 3,
     traceTolerance: 40,
+    affectedSide: 'none',
   };
   function getSettings() {
     try {
