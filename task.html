@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CogniCare - Task Sequencer</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/therapy.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    .task-arena {
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 50vh;
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      margin: 1rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .task-prompt {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 2rem;
+      text-align: center;
+      color: var(--text-dark);
+    }
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      width: 100%;
+      max-width: 500px;
+    }
+    .option-btn {
+      padding: 1.25rem;
+      font-size: 1.2rem;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--bg-body);
+      color: var(--text-dark);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    .option-btn:hover {
+      border-color: var(--primary);
+      background: rgba(52, 152, 219, 0.05);
+    }
+    .option-btn:active {
+      transform: scale(0.98);
+    }
+    .correction-msg {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: #fdf0ed;
+      border: 1px solid #f5b7b1;
+      border-radius: var(--radius-md);
+      color: #c0392b;
+      font-weight: 500;
+      text-align: center;
+      width: 100%;
+      max-width: 500px;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-brand">
+      <span class="dot red sm"></span>
+      <span class="dot green sm"></span>
+      <span class="dot blue sm"></span>
+      <strong>CogniCare</strong>
+    </div>
+    <nav class="header-nav">
+      <a href="therapy.html" class="nav-link">Cognitive Games</a>
+      <a href="movement.html" class="nav-link">Movement Games</a>
+      <a href="task.html" class="nav-link active">Daily Tasks</a>
+      <a href="reports.html" class="nav-link">Progress Dashboard</a>
+    </nav>
+    <div class="header-right">
+      <a href="patient.html" class="icon-btn" title="Patients" aria-label="Patients">👥</a>
+      <a href="settings.html" class="icon-btn" title="Settings" aria-label="Settings">⚙️</a>
+      <button id="btn-dark" class="icon-btn">🌙</button>
+      <button id="btn-fs" class="icon-btn">⛶</button>
+      <span id="clock" class="clock-display">--:--</span>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- Setup Screen -->
+    <div id="therapy-setup" class="therapy-setup">
+      <div class="page-title-row">
+        <div>
+          <h2 class="page-title">Start Task Sequencer</h2>
+          <p class="page-sub">Select a patient and a daily task to begin</p>
+        </div>
+      </div>
+
+      <div class="setup-grid">
+
+        <!-- Patient Select -->
+        <div class="setup-card">
+          <h3 class="setup-card-title">1. Select Patient</h3>
+          <div class="search-bar">
+            <input type="text" id="pt-search" class="input-field" placeholder="Search patient name or ID…" />
+          </div>
+          <div id="pt-list" class="pt-select-list">
+            <p class="empty-msg">No patients found. <a href="patient.html">Add a patient →</a></p>
+          </div>
+        </div>
+
+        <!-- Level Select -->
+        <div class="setup-card">
+          <h3 class="setup-card-title">2. Choose Task</h3>
+          <div class="level-select-grid" id="level-select-grid">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Quick Settings Preview -->
+      <div class="setup-card setup-settings-preview">
+        <h3 class="setup-card-title">3. Session Settings <a href="settings.html" class="small-link">Edit →</a></h3>
+        <div class="settings-preview-row" id="settings-preview">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Voice Instructions -->
+      <div class="setup-card">
+        <h3 class="setup-card-title">4. Instructions</h3>
+        <div id="instruction-box" class="instruction-box">
+          <p id="instruction-text">Select a task to see instructions.</p>
+          <button class="btn btn-outline btn-sm" id="btn-voice" title="Read instructions aloud">🔊 Read Instructions</button>
+        </div>
+      </div>
+
+      <div class="setup-start-row">
+        <div id="setup-patient-badge" class="setup-badge" style="display:none;"></div>
+        <div id="setup-level-badge" class="setup-badge setup-badge-green" style="display:none;"></div>
+        <button class="btn btn-primary btn-large" id="btn-start-session" disabled>▶ Start Session</button>
+      </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="therapy-game" class="therapy-game" style="display:none;">
+
+      <!-- Game Header Bar -->
+      <div class="game-header">
+        <div class="game-info">
+          <span class="game-badge" id="game-patient-name">Patient</span>
+          <span class="game-badge game-badge-green" id="game-level-label">Task</span>
+        </div>
+        <div class="game-stats-bar">
+          <div class="gs-item">
+            <span class="gs-label">Score</span>
+            <span class="gs-val" id="gs-score">0</span>
+          </div>
+          <div class="gs-item">
+            <span class="gs-label">First Try</span>
+            <span class="gs-val green" id="gs-first-try">0</span>
+          </div>
+          <div class="gs-item">
+            <span class="gs-label">Prompts</span>
+            <span class="gs-val orange" id="gs-prompts">0</span>
+          </div>
+          <div class="gs-item">
+            <span class="gs-label">Time</span>
+            <span class="gs-val" id="gs-timer">00:00</span>
+          </div>
+        </div>
+        <div class="game-controls">
+          <button class="btn btn-outline btn-sm" id="btn-pause">⏸ Pause</button>
+          <button class="btn btn-outline btn-sm" id="btn-restart">↺ Restart</button>
+          <button class="btn btn-outline btn-sm" id="btn-quit">✕ Quit</button>
+        </div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="game-progress-wrap">
+        <div class="game-progress-bar" id="game-progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="game-progress-fill" id="game-progress-fill"></div>
+        </div>
+        <span class="progress-label" id="progress-label">0%</span>
+      </div>
+
+      <!-- Task Arena -->
+      <div class="task-arena" id="task-arena">
+        <h2 class="task-prompt" id="task-prompt">Prompt text</h2>
+        <div id="task-options" class="options-grid">
+           <!-- Buttons for options -->
+        </div>
+        <div id="task-correction" class="correction-msg" style="display:none;"></div>
+      </div>
+
+      <!-- Pause Overlay -->
+      <div id="pause-overlay" class="pause-overlay" style="display:none;">
+        <div class="pause-box">
+          <h3>Session Paused</h3>
+          <p>Take a moment and resume when ready.</p>
+          <button class="btn btn-primary" id="btn-resume">▶ Resume</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Results Screen -->
+    <div id="therapy-results" class="therapy-results" style="display:none;">
+      <div class="results-box">
+        <div class="results-header">
+          <div class="results-confetti" id="confetti-container"></div>
+          <div class="results-icon">🎉</div>
+          <h2>Task Complete!</h2>
+          <p id="result-patient-name">Patient Name</p>
+        </div>
+
+        <div class="results-stats">
+          <div class="rs-card green-border">
+            <div class="rs-val" id="r-accuracy">0%</div>
+            <div class="rs-lbl">1st Try Accuracy</div>
+          </div>
+          <div class="rs-card orange-border">
+            <div class="rs-val" id="r-prompts">0</div>
+            <div class="rs-lbl">Prompts Needed</div>
+          </div>
+          <div class="rs-card purple-border">
+            <div class="rs-val" id="r-time">0s</div>
+            <div class="rs-lbl">Time Taken</div>
+          </div>
+        </div>
+
+        <div class="results-detail">
+          <table class="results-table">
+            <tr><td>Correct (1st Try)</td><td id="r-first-try">0</td></tr>
+            <tr><td>Task</td><td id="r-level">—</td></tr>
+          </table>
+        </div>
+
+        <div class="results-actions">
+          <button class="btn btn-outline" id="btn-play-again">↺ Play Again</button>
+          <button class="btn btn-outline" id="btn-next-level">→ Next Task</button>
+          <a href="reports.html" class="btn btn-primary">📊 View Reports</a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <span>CogniCare v2.0</span>
+    <span>© 2026 Hospital Cognitive Rehabilitation System</span>
+    <span id="footer-date"></span>
+  </footer>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <script type="module" src="js/games/task-sequence.js"></script>
+</body>
+</html>
