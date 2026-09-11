@@ -4,11 +4,16 @@
 CogniCare is an interactive, browser-based hospital rehabilitation platform designed for therapists and patients. It leverages scientifically designed color-based cognitive exercises and computer-vision powered movement games to aid in patient recovery. The system provides extensive session tracking, a comprehensive progress dashboard, and a seamless interface tailored for clinical environments.
 
 ## Features
-- **Cognitive Games (7 Progressive Levels):** Ranging from simple single-color recognition to complex multi-color tracking and basket-sorting tasks.
+- **Cognitive Games:** Range from simple single-color recognition to complex multi-color tracking, basket-sorting tasks, and Pattern Repeat memory games.
 - **Movement Games:** Physical rehabilitation tracking utilizing webcam gestures (powered by MediaPipe).
-  - *Reach & Pop:* Reach out and pop dynamic targets with your hand.
-  - *Trace the Path:* Trace a wavy path on-screen using hand gestures (or mouse fallback) to test motor control and tremor stability.
-- **Progress Dashboard & Analytics:** Detailed visualizations of accuracy, reaction time, and path deviation over time. Therapists can filter histories by patient, game type, and date.
+  - *Reach & Pop:* Reach out and pop dynamic targets with your hand. Includes an "Affected-Side Priority" mode for targeted physical therapy.
+  - *Bilateral Bubble Catch:* Use both hands simultaneously to catch synchronized targets, enforcing coordinated dual-limb movement.
+  - *Trace the Path:* Trace a wavy path on-screen using hand gestures to test motor control and tremor stability.
+- **Balance Games:**
+  - *Weight-Shift Catcher:* Stand and shift your torso left and right (tracked via MediaPipe Pose) to catch falling objects and improve core balance.
+- **Daily Tasks:**
+  - *Guided Daily-Task Sequencer:* A cognitive executive-function exercise to practice the correct sequencing of everyday activities (e.g., making tea).
+- **Progress Dashboard & Analytics:** Detailed visualizations of accuracy, reaction time, path deviation, and custom metrics over time. Therapists can filter histories by patient, game type, and date.
 - **Patient Management (CRUD):** Secure, local-storage based patient profiles for adding, editing, and managing therapy sessions.
 - **Customizable Settings:** Granular control over ball count, size, game difficulty, session duration, and sound feedback. Dark-mode toggle for optimal viewing environments.
 
